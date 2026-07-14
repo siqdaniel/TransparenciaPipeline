@@ -1,0 +1,25 @@
+# === AMBIENTE VIRTUAL ===
+# Ignora a pasta venv inteira (essencial estar na raiz)
+venv/
+
+# === CONFIGURAÇÕES E CREDENCIAIS ===
+# Ignora arquivos de variáveis de ambiente
+.env
+
+# === ARQUIVOS DE DADOS PESADOS ===
+# Ignora arquivos de dados CSV em qualquer pasta do projeto
+*.csv
+
+# Ignora arquivos compactados ZIP em qualquer pasta do projeto
+*.zip
+
+# Ignora especificamente a pasta 'data' e tudo que estiver dentro dela
+data/
+
+# === ARQUIVOS TEMPORÁRIOS DO PYTHON ===
+# Ignora pastas de cache do Python para evitar commits de arquivos inúteis
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
