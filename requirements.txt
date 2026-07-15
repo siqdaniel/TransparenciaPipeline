@@ -1,0 +1,2 @@
+gdown
+mysql-connector-python
