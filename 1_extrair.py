@@ -71,7 +71,14 @@ def normalizar_nome_coluna(nome):
     
     while "__" in nome_limpo:
         nome_limpo = nome_limpo.replace("__", "_")
-    return nome_limpo.strip("_")
+        
+    nome_limpo = nome_limpo.strip("_")
+    
+    # REGRA DE EXCEÇÃO: Corrige especificamente "meio_de_transporte" para bater com "meio_transporte" do banco
+    if nome_limpo == "meio_de_transporte":
+        nome_limpo = "meio_transporte"
+        
+    return nome_limpo
 
 
 def carregar_csv_alinhado(conexao, caminho_csv, tabela_raw):
