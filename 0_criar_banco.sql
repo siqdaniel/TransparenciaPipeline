@@ -167,3 +167,39 @@ CREATE TABLE silver_trecho (
     CONSTRAINT chk_num_diarias CHECK (numero_diarias >= 0), -- Constraint extra 1
     CONSTRAINT uq_viagem_trecho UNIQUE (id_viagem, sequencia_trecho) -- Constraint extra 2
 );
+
+-- ============================================================================
+-- 4. CAMADA GOLD
+-- ============================================================================
+
+USE transparencia;
+
+-- 1. DROP caso já existam (Garante idempotência)
+DROP VIEW IF EXISTS gold_view_custo_orgao;
+DROP TABLE IF EXISTS gold_tabela_custo_orgao;
+
+-- 2. Criar a TABELA Agregada Gold (Consolidação física por Órgão)
+CREATE TABLE gold_tabela_custo_orgao AS
+SELECT 
+    v.cod_orgao_superior,
+    v.nome_orgao_superior,
+    COUNT(DISTINCT v.id_viagem) AS total_viagens,
+    SUM(v.valor_total) AS custo_total_viagens,
+    AVG(v.valor_total) AS custo_medio_viagem,
+    SUM(v.valor_diarias) AS total_gasto_diarias,
+    SUM(v.valor_passagens) AS total_gasto_passagens
+FROM silver_viagem v
+GROUP BY v.cod_orgao_superior, v.nome_orgao_superior;
+
+-- 3. Criar a VIEW Agregada Gold (Consolidação dinâmica por Órgão)
+CREATE VIEW gold_view_custo_orgao AS
+SELECT 
+    v.cod_orgao_superior,
+    v.nome_orgao_superior,
+    COUNT(DISTINCT v.id_viagem) AS total_viagens,
+    SUM(v.valor_total) AS custo_total_viagens,
+    AVG(v.valor_total) AS custo_medio_viagem,
+    SUM(v.valor_diarias) AS total_gasto_diarias,
+    SUM(v.valor_passagens) AS total_gasto_passagens
+FROM silver_viagem v
+GROUP BY v.cod_orgao_superior, v.nome_orgao_superior;
