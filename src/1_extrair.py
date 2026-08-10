@@ -10,6 +10,23 @@ import zipfile
 from pathlib import Path
 import gdown
 
+
+import sys
+from pathlib import Path
+
+# Adiciona a pasta atual (src/) ao caminho de busca do Python
+sys.path.append(str(Path(__file__).resolve().parent))
+
+# Importações dos módulos locais do projeto
+from config import (
+    PASTA_DADOS, 
+    DRIVE_FILE_ID, 
+    ARQUIVOS, 
+    TAMANHO_BLOCO, 
+    CSV_SEPARADOR, 
+    CSV_ENCODING
+)
+from banco import conectar, executar, inserir_em_lote
 # Importações dos módulos locais do projeto
 from config import (
     PASTA_DADOS, 

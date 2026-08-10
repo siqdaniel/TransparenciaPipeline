@@ -8,6 +8,21 @@ calcula as colunas de métricas e povoa de forma segura as tabelas estruturadas 
 from datetime import datetime
 import mysql.connector
 from banco import conectar, executar, inserir_em_lote
+import sys
+from pathlib import Path
+
+# Adiciona a pasta atual (src/) ao caminho de busca do Python
+sys.path.append(str(Path(__file__).resolve().parent))
+
+# Importações dos módulos locais do projeto
+from config import (
+    PASTA_DADOS, 
+    ARQUIVOS, 
+    TAMANHO_BLOCO, 
+    CSV_SEPARADOR, 
+    CSV_ENCODING
+)
+from banco import conectar, executar, inserir_em_lote
 from config import TAMANHO_BLOCO
 
 # --- Funções de Tratamento de Dados ---

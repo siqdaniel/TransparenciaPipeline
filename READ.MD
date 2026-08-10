@@ -33,7 +33,7 @@ Orquestração e Versionamento: Git e GitHub
  │  (Cópia fiel do dado bruto em VARCHAR)       │
  └──────────────────────┬────────────────────────┘
                         │
-                        ▼ (2_transformar.py)
+                        ▼ (2_transcleformar.py)
  ┌───────────────────────────────────────────────┐
  │               CAMADA SILVER                   │
  │  (Dado limpo, tipado, PK, FK e Constraints)   │
