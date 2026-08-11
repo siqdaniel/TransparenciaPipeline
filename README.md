@@ -1,131 +1,59 @@
- Aluno: Daniel Victor Sampaio Siqueira
- Turma: Analise de Dados com Python V2
- 
- 
- Pipeline de Dados e Transparência de Gastos Públicos com Viagens a Serviço (Arquitetura Medallion)
- 1. Problema de Negócio
-Os dados abertos sobre despesas e viagens a serviço do Governo Federal são disponibilizados de forma bruta no Portal da Transparência. Devido ao grande volume de dados desorganizados, problemas de tipagem, duplicidades e ausência de padronização, a tomada de decisão rápida e a auditoria dos gastos públicos tornam-se desafios complexos.
+# 📊 ETL & Analytics: Transparência de Gastos Públicos com Viagens
 
-Objetivo do Projeto:
-Construir um pipeline ETL (Extract, Transform, Load) robusto e automatizado que consuma os dados brutos oficiais, estruture a informação em camadas lógicas (Arquitetura Medallion) e responda a perguntas essenciais de gestão com métricas e visualizações legíveis e confiáveis.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" />
+  <img src="https://img.shields.io/badge/MySQL-8.0%2B-orange?style=for-the-badge&logo=mysql" />
+  <img src="https://img.shields.io/badge/Pandas-2.0%2B-150458?style=for-the-badge&logo=pandas" />
+  <img src="https://img.shields.io/badge/Seaborn-Dataviz-3776AB?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Architecture-Medallion-green?style=for-the-badge" />
+</p>
 
- 2. Tecnologias e Arquitetura
+---
 
-Stack de Tecnologias
-Linguagem: Python
+## 📌 1. Escopo & Problema de Negócio
 
-Banco de Dados Relacional: MySQL
+Os dados abertos de viagens e diárias do Governo Federal (Portal da Transparência) contêm um grande volume de registros brutos, inconsistências de tipagem e duplicidades, o que dificulta a auditoria rápida dos recursos públicos.
 
-Manipulação e Carga de Dados: pandas, mysql-connector-python / psycopg2
+**Objetivo:** Construir um pipeline de dados automatizado sob a **Arquitetura Medallion** (Raw ➔ Silver ➔ Gold) para tratar esses dados e fornecer **respostas analíticas claras e fundamentadas** para a gestão pública.
 
-Visualização de Dados (Dataviz): matplotlib, seaborn
+---
 
-Orquestração e Versionamento: Git e GitHub
+## 🏛️ 2. Arquitetura da Solução
 
+```text
+ ┌─────────────────────────────────────────────────────────┐
+ │                      CAMADA RAW                         │
+ │  - Ingestão dos CSVs brutos do Portal da Transparência │
+ │  - Persistência idempotente em formato VARCHAR          │
+ └────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼ (src/2_transformar.py)
+ ┌─────────────────────────────────────────────────────────┐
+ │                     CAMADA SILVER                       │
+ │  - Limpeza de strings e sanitização de caracteres      │
+ │  - Conversão de tipos (DATE, DECIMAL)                   │
+ │  - Aplicação de regras de integridade (PK, FK)          │
+ └────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼ (notebooks/3_analise.ipynb)
+ ┌─────────────────────────────────────────────────────────┐
+ │                      CAMADA GOLD                        │
+ │  - Agregações analíticas via SQL                        │
+ │  - Dataviz e relatórios das perguntas de negócio        │
+ └─────────────────────────────────────────────────────────┘
+--
+📂3. Organização do Repositório
 
-
- Arquitetura Proposta (Medallion Architecture)
- [ Portal da Transparência (.zip) ]
-                 │
-                 ▼ (1_extrair.py)
- ┌───────────────────────────────────────────────┐
- │               CAMADA RAW                      │ 
- │  (Cópia fiel do dado bruto em VARCHAR)       │
- └──────────────────────┬────────────────────────┘
-                        │
-                        ▼ (2_transcleformar.py)
- ┌───────────────────────────────────────────────┐
- │               CAMADA SILVER                   │
- │  (Dado limpo, tipado, PK, FK e Constraints)   │
- └──────────────────────┬────────────────────────┘
-                        │
-                        ▼ (3_analise.ipynb)
- ┌───────────────────────────────────────────────┐
- │               CAMADA GOLD                     │
- │  (Visões agregadas, métricas e Dataviz)       │
- └───────────────────────────────────────────────┘
-
-
-Detalhamento das Camadas
-Raw (Bronze): Preservação integral do histórico extraído. Carga idempotente (TRUNCATE prévio) armazenando todas as colunas no formato VARCHAR para auditoria.
-
-Silver: Limpeza, tratamento de nulos/formatos, conversões explícitas para DECIMAL e DATE, e aplicação de integridade referencial com Chaves Primárias (PK), Chaves Estrangeiras (FK) e Restrições (NOT NULL, CHECK, UNIQUE).
-
-Gold: Modelagem de tabelas agregadas (JOIN + GROUP BY), relatórios analíticos no Jupyter Notebook e gráficos interativos/estáticos.
-
-3. Estrutura do Repositório
-Plaintext
-├── .env.example          # Modelo para configuração de variáveis de ambiente
-├── .gitignore            # Arquivos ignorados (dados brutos, credenciais, etc.)
-├── requirements.txt      # Dependências e bibliotecas do projeto
-├── 0_criar_banco.sql     # DDL de criação das tabelas Raw e Silver com constraints
-├── 1_extrair.py          # Script de extração (Download do ZIP e carga na Raw)
-├── 2_transformar.py      # Script de transformação e carga na Silver
-├── 3_analise.ipynb       # Notebook da Camada Gold (Análises, SQL e Dataviz)
-└── README.md             # Documentação completa do projeto
-
- 4. Como Executar o Projeto
-Pré-requisitos
-Python 3.10+ instalado.
-
-Instância do MySQL Server em execução.
-
-Ferramenta de controle de versão Git.
-
-Passo a Passo
-a. Clonar o Repositório:
-
-git clone https://github.com/siqdaniel/TransparenciaPipeline
-cd TransparenciaPipeline
-
-b. Configurar o Ambiente Virtual:
-
-python -m venv venv
-# No Windows:
-venv\Scripts\activate
-# No Linux/Mac:
-source venv/bin/activate
-
-c. Instalar Dependências:
-
-pip install -r requirements.txt
-
-d. Configurar Variáveis de Ambiente:
-Copie o arquivo .env.example para .env e ajuste suas credenciais de banco de dados e IDs de acesso:
-
-cp .env.example .env
-
-e. Criar a Estrutura do Banco de Dados:
-Execute o script DDL 0_criar_banco.sql no seu SGBD (MySQL) para criar o banco de dados e as tabelas Raw e Silver.
-
-f. Executar a Camada Raw (Extração):
-
-python 1_extrair.py
-
-g.Executar a Camada Silver (Transformação):
-
-python 2_transformar.py
-
-
-h. Executar a Camada Gold (Análise e Dataviz):
-
-Abra o Jupyter Notebook 3_analise.ipynb e execute todas as células.
-
-
-
-5. Principais Insights e Conclusões
-Com base na análise efetuada na Camada Gold, os seguintes pontos chave foram identificados:
-
-Órgãos com Maior Custo: Os órgãos vinculados à defesa e ao planejamento externo concentram os maiores volumes absolutos em passagens e diárias.
-
-Destinos e Custo Médio: Viagens internacionais e trajetos específicos para polos regionais apresentam custos médios por viagem substancialmente mais elevados quando comparados às rotas frequentes do eixo Brasília-capitais.
-
-Distribuição de Trechos e Transportes: O transporte aéreo domina a maior parte dos trechos cadastrados, influenciando diretamente o ticket médio das despesas públicas tratadas.
- 6. Melhorias Futuras
-Orquestração de Pipelines: Implementação de ferramentas como Apache Airflow ou Prefect para agendamento automático das etapas de extração e transformação.
-
-Conteinerização: Criação de um docker-compose.yml para subir o banco de dados e o ambiente de execução em containers isolados.
-
-Qualidade de Dados Avançada: Adição de suítes de teste de qualidade de dados com Great Expectations.
-
-Dashboard Interativo: Construção de um painel interativo utilizando Streamlit ou Power BI consumindo diretamente as visões da Camada Gold.
+```text
+ProjetoFinalV2/
+├── sql/
+│   └── 0_criar_banco.sql    # DDLs de criação do banco e tabelas (Raw/Silver)
+├── src/
+│   ├── config.py            # Credenciais e variáveis de ambiente
+│   ├── banco.py             # Funções de conexão e execução SQL
+│   ├── 1_extrair.py         # Pipeline de extração para a Camada Raw
+│   └── 2_transformar.py     # Pipeline de transformação para a Camada Silver
+├── notebooks/
+│   └── 3_analise.ipynb      # Notebook analítico da Camada Gold (Dataviz)
+├── requirements.txt         # Bibliotecas e dependências do projeto
+└── README.md                # Documentação oficial do projeto
